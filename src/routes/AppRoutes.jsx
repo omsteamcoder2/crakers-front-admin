@@ -22,6 +22,9 @@ import EditGallery from "../components/EditGallery";
 import EditBlog from "../components/EditBlog";
 import ProtectedRoute from "../components/ProtectedRoute";
 import NotFound from "../pages/NotFound";
+import EditService from "../components/EditService";
+import AddService from "../components/AddService";
+import ManageService from "../components/ManageService";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -64,6 +67,14 @@ const router = createBrowserRouter(
           }
         />
         <Route
+          path="addServices"
+          element={
+            <ProtectedRoute>
+              <AddService />
+              </ProtectedRoute>
+              }
+              />
+        <Route
           path="manage-projects"
           element={
             <ProtectedRoute>
@@ -88,6 +99,14 @@ const router = createBrowserRouter(
           }
         />
         <Route
+        path="manage-services"
+        element={
+          <ProtectedRoute>
+            <ManageService />
+          </ProtectedRoute>
+        }
+        />
+        <Route
           path="edit-project/:slug"
           element={
             <ProtectedRoute>
@@ -110,6 +129,14 @@ const router = createBrowserRouter(
               <EditBlog />
             </ProtectedRoute>
           }
+        />
+        <Route
+        path="edit-service/:slug"
+        element={
+          <ProtectedRoute>
+            <EditService/>
+          </ProtectedRoute>
+        }
         />
       </Route>
 

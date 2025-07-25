@@ -11,7 +11,7 @@ const Navbar = () => {
       {/* Mobile menu button */}
       <div className="flex justify-between items-center md:hidden px-2">
         <Link to="/" className="text-xl font-bold">
-          RF Construction
+          {import.meta.env.VITE_COMPANY_NAME}
         </Link>
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 focus:outline-none" aria-label="Toggle menu">
           <svg

@@ -4,16 +4,13 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 
-const EditBlog = () => {
+const EditService = () => {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const [blog, setBlog] = useState({
+  const [service, setService] = useState({
     title: "",
-    content: "",
-    author: "",
+    description: "",
     slug: "",
-    category: "General",
-    tags: "",
     metaTitle: "",
     metaDescription: "",
     keywords: "",
@@ -33,36 +30,31 @@ const EditBlog = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
   useEffect(() => {
-    fetchBlog()
+    fetchService()
   }, [slug])
 
-  const fetchBlog = async () => {
+  const fetchService = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/blogs/${slug}`)
-      const blogData = response.data.blog
+      const response = await axios.get(`${API_BASE_URL}/api/services/${slug}`)
+      const serviceData = response.data.service
 
-      // Convert tags array to string if it exists
-      if (blogData.tags && Array.isArray(blogData.tags)) {
-        blogData.tags = blogData.tags.join(", ")
-      }
-
-      setBlog(blogData)
-      setExistingImages(blogData.images || [])
-      if (blogData.ogImage) {
-        setOgImagePreview(`${API_BASE_URL}${blogData.ogImage}`)
+      setService(serviceData)
+      setExistingImages(serviceData.images || [])
+      if (serviceData.ogImage) {
+        setOgImagePreview(`${API_BASE_URL}${serviceData.ogImage}`)
       }
       setIsLoading(false)
     } catch (error) {
-      console.error("Error fetching blog:", error)
-      setError("Failed to load blog. Please try again.")
+      console.error("Error fetching service:", error)
+      setError("Failed to load service. Please try again.")
       setIsLoading(false)
     }
   }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setBlog({ ...blog, [name]: value })
+    setService({ ...service, [name]: value })
   }
 
   const handleImageChange = (e) => {
@@ -138,63 +130,47 @@ const EditBlog = () => {
     setIsSubmitting(true)
     setError(null)
 
-    if (!blog.title.trim()) {
+    if (!service.title.trim()) {
       setError("Title is required")
       setIsSubmitting(false)
       return
     }
 
-    if (!blog.content.trim()) {
-      setError("Content is required")
-      setIsSubmitting(false)
-      return
-    }
-
-    if (!blog.author.trim()) {
-      setError("Author is required")
+    if (!service.description.trim()) {
+      setError("Description is required")
       setIsSubmitting(false)
       return
     }
 
     const formData = new FormData()
-    formData.append("title", blog.title)
-    formData.append("content", blog.content)
-    formData.append("author", blog.author)
-    formData.append("category", blog.category || "General")
-    formData.append("metaTitle", blog.metaTitle || blog.title)
-    formData.append("metaDescription", blog.metaDescription || blog.content.substring(0, 160))
-    formData.append("keywords", blog.keywords || "")
-    formData.append("ogTitle", blog.ogTitle || blog.title)
-    formData.append("ogDescription", blog.ogDescription || blog.content.substring(0, 160))
-    if (blog.slug) {
-      formData.append("slug", blog.slug)
-    } else {
-      formData.append("slug", blog.title.toLowerCase().replace(/\s+/g, "-"))
-    }
+    formData.append("title", service.title)
+    formData.append("description", service.description)
+    formData.append("metaTitle", service.metaTitle || service.title)
+    formData.append("metaDescription", service.metaDescription || service.description.substring(0, 160))
+    formData.append("keywords", service.keywords || "")
+    formData.append("ogTitle", service.ogTitle || service.title)
+    formData.append("ogDescription", service.ogDescription || service.description.substring(0, 160))
+    formData.append("slug", service.slug || service.title.toLowerCase().replace(/\s+/g, '-'))
     if (ogImage) formData.append("ogImage", ogImage)
 
-    if (blog.tags) {
-      const tagsArray = blog.tags.split(",").map((tag) => tag.trim())
-      tagsArray.forEach((tag) => formData.append("tags", tag))
-    }
+    formData.set("keepImages", JSON.stringify(existingImages));
 
-    existingImages.forEach((img) => formData.append("keepImages", img))
 
     if (newImages.length > 0) {
       newImages.forEach((img) => formData.append("images", img))
     }
 
     try {
-      await axios.put(`${API_BASE_URL}/api/blogs/${slug}`, formData, {
+      await axios.put(`${API_BASE_URL}/api/services/${slug}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       setIsSubmitting(false)
-      navigate("/manage-blogs")
+      navigate("/manage-services")
     } catch (error) {
-      console.error("Error updating blog:", error)
-      setError("Failed to update blog. Please try again.")
+      console.error("Error updating service:", error)
+      setError("Failed to update service. Please try again.")
       setIsSubmitting(false)
     }
   }
@@ -210,7 +186,7 @@ const EditBlog = () => {
   return (
     <div className="w-full max-w-5xl mx-auto py-6 px-1">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Edit Blog Post</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Edit Service</h1>
       </div>
 
       {error && (
@@ -234,85 +210,37 @@ const EditBlog = () => {
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-            <h2 className="text-lg font-semibold">Blog Information</h2>
-            <p className="text-sm text-blue-100">Update the details for your blog post</p>
+            <h2 className="text-lg font-semibold">Service Information</h2>
+            <p className="text-sm text-blue-100">Update the details for your service</p>
           </div>
 
           <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Blog Title <span className="text-indigo-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={blog.title}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter blog title"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Author <span className="text-indigo-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="author"
-                  value={blog.author}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter author name"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                <select
-                  name="category"
-                  value={blog.category || "General"}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="General">General</option>
-                  <option value="Construction">Construction</option>
-                  <option value="Renovation">Renovation</option>
-                  <option value="Design">Design</option>
-                  <option value="Architecture">Architecture</option>
-                  <option value="Tips">Tips & Advice</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (comma separated)</label>
-                <input
-                  type="text"
-                  name="tags"
-                  value={blog.tags || ""}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="construction, design, modern"
-                />
-              </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Service Title <span className="text-indigo-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={service.title}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter service title"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Content <span className="text-indigo-500">*</span>
+                Description <span className="text-indigo-500">*</span>
               </label>
               <textarea
-                name="content"
-                value={blog.content}
+                name="description"
+                value={service.description}
                 onChange={handleInputChange}
                 rows={6}
                 className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Write your blog content here..."
+                placeholder="Write your service description here..."
                 required
               />
             </div>
@@ -322,7 +250,7 @@ const EditBlog = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
             <h2 className="text-lg font-semibold">SEO Settings</h2>
-            <p className="text-sm text-blue-100">Optimize your blog post for search engines</p>
+            <p className="text-sm text-blue-100">Optimize your service for search engines</p>
           </div>
 
           <div className="p-6 space-y-4">
@@ -332,43 +260,42 @@ const EditBlog = () => {
                 <input
                   type="text"
                   name="metaTitle"
-                  value={blog.metaTitle || ""}
+                  value={service.metaTitle || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Meta title for SEO"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400">Recommended: 50-60 characters</p>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug</label>
-                <input
-                  type="text"
-                  name="slug"
-                  value={blog.slug || ""}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="URL-friendly slug (optional)"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400">Leave empty to auto-generate from title</p>
-              </div>
+
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Keywords</label>
                 <input
                   type="text"
                   name="keywords"
-                  value={blog.keywords || ""}
+                  value={service.keywords || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="comma separated keywords"
                 />
               </div>
             </div>
-
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug</label>
+              <input
+                type="text"
+                name="slug"
+                value={service.slug || ""}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="URL slug for the service"
+              />
+            </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Description</label>
               <textarea
                 name="metaDescription"
-                value={blog.metaDescription || ""}
+                value={service.metaDescription || ""}
                 onChange={handleInputChange}
                 rows={3}
                 className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -383,7 +310,7 @@ const EditBlog = () => {
                 <input
                   type="text"
                   name="ogTitle"
-                  value={blog.ogTitle || ""}
+                  value={service.ogTitle || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Title for social sharing"
@@ -395,7 +322,7 @@ const EditBlog = () => {
                 <input
                   type="text"
                   name="ogDescription"
-                  value={blog.ogDescription || ""}
+                  value={service.ogDescription || ""}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Description for social sharing"
@@ -480,8 +407,8 @@ const EditBlog = () => {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-            <h2 className="text-lg font-semibold">Blog Images</h2>
-            <p className="text-sm text-blue-100">Add or remove images from your blog post</p>
+            <h2 className="text-lg font-semibold">Service Images</h2>
+            <p className="text-sm text-blue-100">Add or remove images from your service</p>
           </div>
 
           <div className="p-6">
@@ -551,10 +478,10 @@ const EditBlog = () => {
                 multiple
                 onChange={handleImageChange}
                 className="hidden"
-                id="blog-images"
+                id="service-images"
                 accept="image/*"
               />
-              <label htmlFor="blog-images" className="cursor-pointer flex flex-col items-center justify-center py-4">
+              <label htmlFor="service-images" className="cursor-pointer flex flex-col items-center justify-center py-4">
                 <svg
                   className="w-10 h-10 text-gray-400 mb-2"
                   fill="none"
@@ -626,7 +553,7 @@ const EditBlog = () => {
         <div className="flex justify-end space-x-3">
           <button
             type="button"
-            onClick={() => navigate("/manage-blogs")}
+            onClick={() => navigate("/manage-services")}
             className="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           >
             Cancel
@@ -659,4 +586,4 @@ const EditBlog = () => {
   )
 }
 
-export default EditBlog
+export default EditService

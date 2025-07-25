@@ -12,6 +12,7 @@ const EditProject = () => {
     description: "",
     category: "Residential",
     location: "",
+    slug: "",
     coverImage: "",
     gallery: [],
     metaTitle: "",
@@ -182,7 +183,7 @@ const EditProject = () => {
     formData.append("keywords", project.keywords)
     formData.append("ogTitle", project.ogTitle || project.title)
     formData.append("ogDescription", project.ogDescription || project.description.substring(0, 160))
-
+    formData.append("slug", project.slug || project.title.toLowerCase().replace(/\s+/g, '-'))
     // Handle cover image
     if (removeCoverImage) {
       formData.append("removeCoverImage", "true")
@@ -291,6 +292,17 @@ const EditProject = () => {
                   <option value="Interior">Interior Design</option>
                 </select>
               </div>
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug</label>
+              <input
+                type="text"
+                name="slug"
+                value={project.slug}
+                onChange={handleInputChange}
+                placeholder="Project slug"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
 
             <div className="space-y-2">

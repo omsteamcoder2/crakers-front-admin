@@ -38,6 +38,7 @@ const AdminLayout = () => {
     { path: "/manage-projects", label: "Projects", icon: "briefcase" },
     { path: "/manage-blogs", label: "Blogs", icon: "file-text" },
     { path: "/manage-gallery", label: "Gallery", icon: "image" },
+    { path: "/manage-services", label: "Services", icon: "tools" }, // ✅ New
   ]
 
   const handleLogout = () => {
@@ -82,7 +83,7 @@ const AdminLayout = () => {
 
             {/* Drawer header */}
             <div className="flex-shrink-0 flex items-center px-4 mt-6">
-              <h2 className="text-white text-lg font-bold">RF Constructions</h2>
+              <h2 className="text-white text-lg font-bold">{import.meta.env.VITE_COMPANY_NAME}</h2>
             </div>
 
             {/* Drawer navigation - with flex-1 to push profile to bottom */}
@@ -136,6 +137,15 @@ const AdminLayout = () => {
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       )}
+                      {item.icon === "tools" && (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.828 14.828a4 4 0 01-5.656 0L3 8.657V7h1.657l6.172 6.172a4 4 0 005.656 0l1.415-1.414a4 4 0 000-5.656l-1.414-1.414a4 4 0 00-5.657 0L6.343 6.343"
+                        />
+                      )}
+
                     </svg>
                     {item.label}
                   </Link>
@@ -206,7 +216,7 @@ const AdminLayout = () => {
                   </svg>
                 </button>
               )}
-              <h1 className="text-lg md:text-2xl font-bold text-white ml-2 md:ml-0">RF Constructions</h1>
+              <h1 className="text-lg md:text-2xl font-bold text-white ml-2 md:ml-0">{import.meta.env.VITE_COMPANY_NAME}</h1>
             </div>
 
             <div className="flex items-center space-x-3 md:space-x-4">

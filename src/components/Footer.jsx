@@ -19,7 +19,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-3 md:space-y-4">
             <Link to="/" onClick={scrollToTop} className="inline-block">
-              <img src="/assets/images/logo.png" alt="RF Construction" className="h-12 md:h-16 rounded-sm" />
+              <img src="/assets/images/logo.png" alt={`${process.env.VITE_COMPANY_NAME}`} className="h-12 md:h-16 rounded-sm" />
             </Link>
             <p className="mt-2 md:mt-4 text-sm md:text-base text-gray-300">
               Building dreams into reality with quality construction services since 2010.
@@ -202,7 +202,7 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-800 text-center text-xs md:text-sm text-gray-400">
-          <p>© {currentYear} RF Construction. All rights reserved.</p>
+          <p>© {currentYear} {process.env.VITE_COMPANY_NAME}. All rights reserved.</p>
           <p className="mt-1">
             Developed by{" "}
             <a

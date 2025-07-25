@@ -35,7 +35,7 @@ const AboutPage = () => {
       year: "2010",
       title: "Company Founded",
       description:
-        "RF Construction was established with a vision to provide quality construction services in Tamil Nadu.",
+        `${import.meta.env.VITE_COMPANY_NAME} was established with a vision to provide quality construction services in Tamil Nadu.`,
     },
     {
       year: "2013",
@@ -61,7 +61,7 @@ const AboutPage = () => {
 
   return (
     <>
-      <TopSection heading1={"About RF Construction"} heading2={"Building excellence in Tamil Nadu for over a decade"} />
+      <TopSection heading1={`About ${import.meta.env.VITE_COMPANY_NAME}`} heading2={"Building excellence in Tamil Nadu for over a decade"} />
 
       {/* Company Overview */}
       <section className="py-10 sm:py-16 md:py-20 bg-white">
@@ -71,7 +71,7 @@ const AboutPage = () => {
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4">Our Story</h2>
               <div className="w-16 sm:w-20 h-1 bg-red-800 mb-4 sm:mb-6"></div>
               <p className="text-sm sm:text-base md:text-lg text-gray-600">
-                Founded in 2010, RF Construction has grown from a small local contractor to one of the leading
+                Founded in 2010, {import.meta.env.VITE_COMPANY_NAME} has grown from a small local contractor to one of the leading
                 construction companies in Tamil Nadu. Our journey has been marked by a commitment to quality,
                 innovation, and customer satisfaction.
               </p>
@@ -81,7 +81,7 @@ const AboutPage = () => {
                 and creativity to every project.
               </p>
               <p className="text-sm sm:text-base md:text-lg text-gray-600">
-                At RF Construction, we believe in building not just structures, but relationships. Our client-centered
+                At {import.meta..env.VITE_COMPANY_NAME}, we believe in building not just structures, but relationships. Our client-centered
                 approach ensures that we understand and fulfill the unique needs and vision of each client.
               </p>
             </div>
@@ -229,7 +229,7 @@ const AboutPage = () => {
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Our Leadership Team</h2>
             <div className="w-16 sm:w-20 h-1 bg-red-800 mx-auto mb-4 sm:mb-6"></div>
             <p className="text-sm sm:text-base md:text-lg text-gray-600">
-              Meet the experts behind RF Construction's success
+              Meet the experts behind {import.meta.env.VITE_COMPANY_NAME}'s success
             </p>
           </div>
 

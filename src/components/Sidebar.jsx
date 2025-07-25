@@ -17,7 +17,6 @@ const Sidebar = () => {
     return location.pathname === path
   }
 
-  // Navigation items grouped by section
   const navItems = [
     {
       title: "Content Management",
@@ -42,13 +41,21 @@ const Sidebar = () => {
           path: "/manage-blogs",
           icon: "M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z",
         },
-
+        {
+          name: "Services",
+          path: "/manage-services",
+          icon: "M3 7h18M3 12h18M3 17h18", // menu/hamburger icon
+        },
       ],
     },
     {
       title: "Create New",
       items: [
-        { name: "Add Project", path: "/addprojects", icon: "M12 4v16m8-8H4" },
+        {
+          name: "Add Project",
+          path: "/addprojects",
+          icon: "M12 4v16m8-8H4",
+        },
         {
           name: "Add Gallery",
           path: "/addgallery",
@@ -59,9 +66,15 @@ const Sidebar = () => {
           path: "/addblogs",
           icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
         },
+        {
+          name: "Add Service",
+          path: "/addservices",
+          icon: "M12 4v16m8-8H4", // same "plus" icon as Add Project
+        },
       ],
     },
   ]
+
 
   return (
     <motion.aside
@@ -170,7 +183,7 @@ const Sidebar = () => {
           Logout
         </button>
         <div className="mt-4 text-xs text-center text-blue-300">
-          <p>RF Constructions Admin</p>
+          <p>{import.meta.env.VITE_COMPANY_NAME} Admin</p>
           <p className="mt-1">
             © {new Date().getFullYear()} All Rights Reserved
           </p>

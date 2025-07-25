@@ -25,7 +25,7 @@ const ContactPage = () => {
               style={{ border: 0 }}
               allowFullScreen=""
               loading="lazy"
-              title="RF Construction Location"
+              title={`${import.meta.env.VITE_COMPANY_NAME} Location`}
             ></iframe>
           </div>
         </div>
