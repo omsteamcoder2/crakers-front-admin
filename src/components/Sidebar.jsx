@@ -3,23 +3,15 @@
 import { motion } from "framer-motion"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 
-const Sidebar = () => {
+const Sidebar = ({ onClose, onLogout }) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleLogout = () => {
-    localStorage.removeItem("token")
-    navigate("/")
-  }
-
-  // Check if the current path matches the link
-  const isActive = (path) => {
-    return location.pathname === path
-  }
+  const isActive = (path) => location.pathname === path
 
   const navItems = [
     {
-      title: "Content Management",
+      title: "Manage Content",
       items: [
         {
           name: "Dashboard",
@@ -36,16 +28,6 @@ const Sidebar = () => {
           path: "/manage-gallery",
           icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
         },
-        {
-          name: "Blogs",
-          path: "/manage-blogs",
-          icon: "M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z",
-        },
-        {
-          name: "Services",
-          path: "/manage-services",
-          icon: "M3 7h18M3 12h18M3 17h18", // menu/hamburger icon
-        },
       ],
     },
     {
@@ -61,56 +43,65 @@ const Sidebar = () => {
           path: "/addgallery",
           icon: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12",
         },
+      ],
+    },
+    {
+      title: "Google Tag",
+      items: [
         {
-          name: "Add Blog",
-          path: "/addblogs",
-          icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
+          name: "Manage Gtm Tag",
+          path: "/manage-gmt",
+          icon: "M4 6h16M4 12h16M4 18h16",
         },
         {
-          name: "Add Service",
-          path: "/addservices",
-          icon: "M12 4v16m8-8H4", // same "plus" icon as Add Project
+          name: "Add Gtm Tag",
+          path: "/addgtmtag",
+          icon: "M12 4v16m8-8H4",
         },
       ],
     },
   ]
 
-
   return (
     <motion.aside
       initial={{ x: "-100%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="w-64 bg-gradient-to-b from-blue-900 to-blue-950 text-white flex flex-col h-screen sticky top-0 overflow-y-auto border-r border-blue-800/30"
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="w-64 h-screen fixed md:sticky top-0 bg-zinc-800 text-zinc-100 shadow-xl flex flex-col border-r border-zinc-800 z-50"
     >
-      {/* Profile Section */}
-      <div className="p-4 flex items-center space-x-3 border-b border-blue-800/30">
+      {/* Header */}
+      <div className="p-5 border-b border-zinc-700 flex items-center gap-3 relative">
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="md:hidden absolute top-4 right-4 text-zinc-400 hover:text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
         <img
-          src="/public/assets/images/profile.png"
-          alt="Profile"
-          className="w-10 h-10 rounded-full object-cover border-2 border-blue-600"
+          src="/assets/images/profile.png"
+          alt="Admin"
+          className="w-11 h-11 rounded-full border-2 border-amber-500 object-cover"
         />
         <div>
-          <h2 className="font-medium">Admin User</h2>
-          <p className="text-xs text-blue-300">Administrator</p>
+          <p className="text-base font-semibold">Admin User</p>
+          <p className="text-xs text-zinc-400">Administrator</p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 py-4">
-        <div className="px-2 mb-4">
+      {/* Nav Sections */}
+      <div className="flex-1 py-5 overflow-y-auto">
+        <div className="px-4 mb-5">
           <a
-            href="http://localhost:3000/"
+            href={import.meta.env.VITE_COMPANY_BASE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center px-4 py-2.5 text-sm text-blue-100 hover:bg-blue-800/20 hover:text-white rounded-md transition-colors"
+            className="flex items-center text-sm text-zinc-300 hover:text-white px-3 py-2 rounded-md transition"
           >
-            <svg
-              className="w-5 h-5 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -121,28 +112,29 @@ const Sidebar = () => {
             View Website
           </a>
         </div>
-        {navItems.map((section, idx) => (
-          <div key={idx} className="mb-6">
-            <h3 className="px-6 mb-2 text-xs font-semibold uppercase tracking-wider text-blue-300">
-              {section.title}
-            </h3>
+
+        {navItems.map((group, index) => (
+          <div key={index} className="mb-6">
+            <h4 className="px-6 text-xs text-zinc-100 uppercase font-medium tracking-wide mb-2">
+              {group.title}
+            </h4>
             <ul className="space-y-1">
-              {section.items.map((item, itemIdx) => (
-                <li key={itemIdx}>
+              {group.items.map((item, i) => (
+                <li key={i}>
                   <Link
                     to={item.path}
-                    className={`flex items-center px-6 py-2.5 text-sm transition-colors duration-200 ${
+                    className={`flex items-center px-6 py-2.5 text-sm font-medium rounded-md transition ${
                       isActive(item.path)
-                        ? "bg-blue-800/40 text-white border-l-4 border-blue-500"
-                        : "text-blue-100 hover:bg-blue-800/20 hover:text-white"
+                        ? "bg-amber-600/20 text-amber-200 border-l-4 border-amber-500"
+                        : "text-zinc-200 hover:bg-zinc-800 hover:text-white"
                     }`}
+                    onClick={onClose}
                   >
                     <svg
                       className="w-5 h-5 mr-3"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         strokeLinecap="round"
@@ -161,17 +153,16 @@ const Sidebar = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-blue-800/30 mt-auto">
+      <div className="p-5 border-t border-zinc-700 mt-auto">
         <button
-          onClick={handleLogout}
-          className="flex items-center w-full px-4 py-2 text-sm text-blue-100 hover:bg-blue-800/30 rounded-md transition-colors"
+          onClick={onLogout}
+          className="flex items-center w-full text-sm text-red-400 hover:bg-zinc-700 px-3 py-2 rounded-md transition"
         >
           <svg
-            className="w-5 h-5 mr-3"
+            className="w-5 h-5 mr-2"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <path
               strokeLinecap="round"
@@ -182,15 +173,13 @@ const Sidebar = () => {
           </svg>
           Logout
         </button>
-        <div className="mt-4 text-xs text-center text-blue-300">
-          <p>{import.meta.env.VITE_COMPANY_NAME} Admin</p>
-          <p className="mt-1">
-            © {new Date().getFullYear()} All Rights Reserved
-          </p>
+        <div className="mt-4 text-xs text-center text-zinc-300">
+          <p>{import.meta.env.VITE_COMPANY_NAME || "Thiru Gas"} Admin</p>
+          <p>© {new Date().getFullYear()} All Rights Reserved</p>
         </div>
       </div>
     </motion.aside>
-  );
+  )
 }
 
 export default Sidebar

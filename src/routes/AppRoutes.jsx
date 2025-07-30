@@ -13,18 +13,16 @@ import Login from "../components/Login";
 import Dashboard from "../components/Dashboard";
 import AddProjects from "../components/AddProjects";
 import AddGallery from "../components/AddGallery";
-import AddBlogs from "../components/AddBlogs";
 import ManageProjects from "../components/ManageProjects";
 import ManageGallery from "../components/ManageGallery";
-import ManageBlogs from "../components/ManageBlogs";
 import EditProject from "../components/EditProject";
 import EditGallery from "../components/EditGallery";
-import EditBlog from "../components/EditBlog";
+
 import ProtectedRoute from "../components/ProtectedRoute";
 import NotFound from "../pages/NotFound";
-import EditService from "../components/EditService";
-import AddService from "../components/AddService";
-import ManageService from "../components/ManageService";
+import AddGtmTag from "../components/AddGtmTag";
+import ManageGtmTags from "../components/ManageGmtTag";
+import EditGtmTag from "../components/EditGtmTag";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -59,22 +57,6 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="addblogs"
-          element={
-            <ProtectedRoute>
-              <AddBlogs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="addServices"
-          element={
-            <ProtectedRoute>
-              <AddService />
-              </ProtectedRoute>
-              }
-              />
-        <Route
           path="manage-projects"
           element={
             <ProtectedRoute>
@@ -89,22 +71,6 @@ const router = createBrowserRouter(
               <ManageGallery />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="manage-blogs"
-          element={
-            <ProtectedRoute>
-              <ManageBlogs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-        path="manage-services"
-        element={
-          <ProtectedRoute>
-            <ManageService />
-          </ProtectedRoute>
-        }
         />
         <Route
           path="edit-project/:slug"
@@ -123,20 +89,28 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="edit-blog/:slug"
+          path="addgtmtag"
           element={
             <ProtectedRoute>
-              <EditBlog />
+              <AddGtmTag />
             </ProtectedRoute>
           }
         />
         <Route
-        path="edit-service/:slug"
-        element={
-          <ProtectedRoute>
-            <EditService/>
-          </ProtectedRoute>
-        }
+          path="manage-gmt"
+          element={
+            <ProtectedRoute>
+              <ManageGtmTags />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="editgtmtag/:id"
+          element={
+            <ProtectedRoute>
+              <EditGtmTag />
+            </ProtectedRoute>
+          }
         />
       </Route>
 
