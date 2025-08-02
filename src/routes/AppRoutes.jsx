@@ -11,11 +11,8 @@ import AdminLayout from "../layouts/AdminLayouts";
 // Admin Pages
 import Login from "../components/Login";
 import Dashboard from "../components/Dashboard";
-import AddProjects from "../components/AddProjects";
 import AddGallery from "../components/AddGallery";
-import ManageProjects from "../components/ManageProjects";
 import ManageGallery from "../components/ManageGallery";
-import EditProject from "../components/EditProject";
 import EditGallery from "../components/EditGallery";
 
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -23,6 +20,11 @@ import NotFound from "../pages/NotFound";
 import AddGtmTag from "../components/AddGtmTag";
 import ManageGtmTags from "../components/ManageGmtTag";
 import EditGtmTag from "../components/EditGtmTag";
+import EditProduct from "../components/EditProduct";
+import ManageProducts from "../components/ManageProduct";
+import AddProduct from "../components/AddProduct";
+import CategoryManagement from "../components/CategoryManagement";
+import PopupAdManagement from "../components/PopupAdManagement";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,10 +43,10 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="addprojects"
+          path="add-product"
           element={
             <ProtectedRoute>
-              <AddProjects />
+              <AddProduct />
             </ProtectedRoute>
           }
         />
@@ -57,10 +59,10 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="manage-projects"
+          path="manage-products"
           element={
             <ProtectedRoute>
-              <ManageProjects />
+              <ManageProducts />
             </ProtectedRoute>
           }
         />
@@ -73,13 +75,29 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="edit-project/:slug"
+          path="manage-category"
           element={
             <ProtectedRoute>
-              <EditProject />
+              <CategoryManagement />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="manage-popupad"
+          element={
+            <ProtectedRoute>
+              <PopupAdManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+  path="edit-product/:code"
+  element={
+    <ProtectedRoute>
+      <EditProduct />
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="edit-gallery/:id"
           element={

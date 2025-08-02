@@ -49,25 +49,25 @@ export default function ManageGtmTag() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-red-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 w-full p-2 md:p-6">
+    <div className="space-y-6 w-full p-2 md:p-6 bg-gradient-to-b from-red-50 to-orange-50 min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-red-800">
             Manage GTM Tags
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-orange-600 mt-1">
             Total: {tags.length} tags
           </p>
         </div>
         <button
           onClick={() => navigate("/addgtmtag")}
-          className="px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors flex items-center whitespace-nowrap shadow-md hover:shadow-md"
+          className="px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-red-600 to-orange-600 text-white text-sm sm:text-base rounded-lg hover:from-red-700 hover:to-orange-700 transition-colors flex items-center whitespace-nowrap shadow-md hover:shadow-md"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add New Tag
@@ -97,24 +97,28 @@ export default function ManageGtmTag() {
           message="No GTM tags found. Add your first tag!"
         />
       ) : (
-        <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden border border-gray-200">
+        <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden border border-orange-200">
           {/* Mobile view: Cards */}
           <div className="block sm:hidden">
             {tags.map((tag) => (
               <div
                 key={tag._id}
-                className="w-full border-b border-gray-200 p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors"
+                className="w-full border-b border-orange-100 p-3 flex items-start gap-3 hover:bg-orange-50 transition-colors"
               >
                 {/* Content */}
                 <div className="flex-1 min-w-0 w-full">
-                  <h3 className="font-semibold text-gray-800 text-sm line-clamp-1">
+                  <h3 className="font-semibold text-red-800 text-sm line-clamp-1">
                     {tag.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-gray-600 capitalize">
+                    <span className="text-xs font-medium bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded capitalize">
                       {tag.location}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      tag.isActive 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-gray-100 text-gray-800"
+                    }`}>
                       {tag.isActive ? "Active" : "Inactive"}
                     </span>
                   </div>
@@ -148,35 +152,35 @@ export default function ManageGtmTag() {
 
           {/* Desktop table */}
           <div className="hidden sm:block overflow-x-auto w-full">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-orange-200">
+              <thead className="bg-gradient-to-r from-red-50 to-orange-50">
                 <tr>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Location
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-orange-100">
                 {tags.map((tag) => (
                   <tr
                     key={tag._id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-orange-50 transition-colors"
                   >
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm sm:text-base font-semibold text-gray-800">
+                      <div className="text-sm sm:text-base font-semibold text-red-800">
                         {tag.name}
                       </div>
                     </td>
-                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-600 capitalize">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-orange-600 capitalize">
                       {tag.location}
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -224,13 +228,13 @@ export default function ManageGtmTag() {
       {/* Confirm Delete Modal */}
       {confirmModalOpen && tagToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-2xl max-w-md w-full p-4 sm:p-6 border border-gray-200">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-2xl max-w-md w-full p-4 sm:p-6 border border-orange-200">
+            <h2 className="text-lg sm:text-xl font-bold text-red-800 mb-3 sm:mb-4">
               Confirm Deletion
             </h2>
-            <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
+            <p className="text-orange-600 text-sm sm:text-base mb-4 sm:mb-6">
               Are you sure you want to delete{" "}
-              <strong>{tagToDelete.name}</strong>?
+              <strong>{tagToDelete.name}</strong>? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3 sm:space-x-4">
               <button
@@ -238,13 +242,13 @@ export default function ManageGtmTag() {
                   setConfirmModalOpen(false);
                   setTagToDelete(null);
                 }}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm sm:text-base transition-colors"
+                className="px-4 py-2 text-red-800 bg-white border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm sm:text-base transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-colors text-sm sm:text-base shadow hover:shadow-md"
               >
                 Delete
               </button>

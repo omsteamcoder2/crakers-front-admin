@@ -1,6 +1,6 @@
 import AppRoutes from "./routes/AppRoutes";
 import "./index.css"
-const Name="Thiru Gas Repairing-Admin panel"
+const Name="Fire Crakers-Admin panel"
 document.title=Name
 const App = () => {
   return <AppRoutes />;

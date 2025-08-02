@@ -1,4 +1,3 @@
-// pages/AddGtmTag.jsx
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -46,22 +45,22 @@ const AddGtmTag = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-3 sm:p-4 md:p-5 lg:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 bg-gradient-to-b from-red-50 to-orange-50 min-h-screen">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-            Add Google Tag Manager Code
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-800">
+            Add Tracking Script
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Create and manage tracking scripts
+          <p className="text-sm sm:text-base text-orange-600 mt-1">
+            Manage your Google Tag Manager codes
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 sm:p-4 rounded-lg text-sm sm:text-base flex items-center mb-4 sm:mb-6">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg flex items-center mb-6">
           <svg
-            className="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+            className="w-5 h-5 mr-2"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -75,29 +74,34 @@ const AddGtmTag = () => {
         </div>
       )}
 
-      <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden border border-gray-200">
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 sm:space-y-6">
+      <div className="w-full bg-white rounded-xl shadow-md overflow-hidden border border-orange-200">
+        <div className="p-4 sm:p-6 bg-gradient-to-r from-red-600 to-orange-600 text-white">
+          <h2 className="text-lg sm:text-xl font-semibold">Script Details</h2>
+          <p className="text-sm text-orange-100">Configure your tracking script</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Tag Name *
+            <label className="block text-sm sm:text-base font-medium text-red-800 mb-2">
+              Tag Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g. GTM Header"
+              className="mt-1 block w-full px-4 py-2.5 text-sm sm:text-base border border-orange-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="e.g. GTM Header Script"
             />
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Placement *
+            <label className="block text-sm sm:text-base font-medium text-red-800 mb-2">
+              Placement <span className="text-red-500">*</span>
             </label>
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-4 py-2.5 text-sm sm:text-base border border-orange-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
               <option value="header">Header</option>
               <option value="body">Body</option>
@@ -106,15 +110,15 @@ const AddGtmTag = () => {
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-              Script Content *
+            <label className="block text-sm sm:text-base font-medium text-red-800 mb-2">
+              Script Content <span className="text-red-500">*</span>
             </label>
             <textarea
-              rows={5}
+              rows={8}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Paste your GTM script here"
+              className="mt-1 block w-full px-4 py-2.5 text-sm sm:text-base border border-orange-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent font-mono"
+              placeholder="<!-- Paste your GTM script here -->"
             ></textarea>
           </div>
 
@@ -124,27 +128,42 @@ const AddGtmTag = () => {
               type="checkbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="h-5 w-5 text-red-600 border-orange-300 rounded focus:ring-red-500"
             />
             <label
               htmlFor="isActive"
-              className="ml-2 block text-xs sm:text-sm text-gray-700"
+              className="ml-2 block text-sm sm:text-base text-red-800"
             >
-              Active
+              Activate this script
             </label>
           </div>
 
-          <div className="flex justify-end pt-2 sm:pt-4 border-t border-gray-200">
+          <div className="flex justify-end pt-4 border-t border-orange-200">
+            <button
+              type="button"
+              onClick={() => navigate("/manage-gmt")}
+              className="px-4 py-2.5 mr-3 text-sm sm:text-base text-red-800 bg-white border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-4 py-2 sm:px-5 sm:py-2.5 text-white text-sm sm:text-base rounded-lg font-medium min-w-[120px] sm:min-w-[140px] text-center shadow-md hover:shadow-md transition ${
+              className={`px-4 py-2.5 text-sm sm:text-base text-white rounded-lg font-medium min-w-[120px] text-center shadow-md hover:shadow-md transition-colors ${
                 isSubmitting
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  ? "bg-orange-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
               }`}
             >
-              {isSubmitting ? "Saving..." : "Save Tag"}
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : "Save Script"}
             </button>
           </div>
         </form>
