@@ -25,6 +25,7 @@ import ManageProducts from "../components/ManageProduct";
 import AddProduct from "../components/AddProduct";
 import CategoryManagement from "../components/CategoryManagement";
 import PopupAdManagement from "../components/PopupAdManagement";
+import ManageOrders from "../components/ManageOrders";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -87,6 +88,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute>
               <PopupAdManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manage-orders"
+          element={
+            <ProtectedRoute>
+              <ManageOrders />
             </ProtectedRoute>
           }
         />

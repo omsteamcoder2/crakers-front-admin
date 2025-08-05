@@ -76,6 +76,10 @@ const EditProduct = () => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
+const handleTagSelection = (tag) => {
+  setProduct({ ...product, tags: tag }); // Set the selected tag as the only tag
+};
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -358,19 +362,33 @@ if (product.piecesPerBox !== "" && product.piecesPerBox !== null && product.piec
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-red-800">
-                Tags
-              </label>
-              <input
-                type="text"
-                name="tags"
-                value={product.tags || ""}
-                onChange={handleInputChange}
-                className="w-full border border-orange-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Comma separated tags (e.g., Bestseller, New Arrival)"
-              />
-            </div>
+          <div className="space-y-2">
+  <label className="block text-sm font-medium text-red-800">
+    Tags
+  </label>
+  <div className="flex gap-2 flex-wrap">
+    {[
+      "Bestseller",
+      "New Arrival",
+      "Diwali Special",
+      "Kids Friendly",
+    ].map((tagOption) => (
+      <button
+        key={tagOption}
+        type="button"
+        onClick={() => handleTagSelection(tagOption)} // Set the clicked tag
+        className={`px-4 py-2 rounded-lg border ${
+          product.tags === tagOption // Check if the tag is selected
+            ? "bg-red-600 text-white border-red-600"
+            : "bg-white text-red-800 border-orange-300"
+        } transition`}
+      >
+        {tagOption}
+      </button>
+    ))}
+  </div>
+</div>
+
           </div>
         </div>
 

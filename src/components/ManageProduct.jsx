@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import NoContent from "./NoContent";
-import { Eye, Pencil, X } from "lucide-react";
+import { Eye, Pencil, X, Search, Filter } from "lucide-react";
 
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -15,7 +16,10 @@ const ManageProducts = () => {
   const navigate = useNavigate();
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-const [togglingProductCode, setTogglingProductCode] = useState(null);
+  const [togglingProductCode, setTogglingProductCode] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+const [categories, setCategories] = useState([]);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,50 +27,71 @@ const [togglingProductCode, setTogglingProductCode] = useState(null);
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/products`);
-      setProducts(response.data.products || []);
-      setError(null);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Failed to load products. Please try again.");
-      setProducts([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-const handleToggleProductStatus = async (code, currentStatus) => {
+const fetchProducts = async () => {
+  setIsLoading(true);
   try {
-    setTogglingProductCode(code); // 🌀 Start spinner for that product
+    const response = await axios.get(`${API_BASE_URL}/api/products`);
+    const productsData = response.data.products || []; // Make sure to handle the response properly
+    setProducts(productsData);
 
-    // Optimistic update
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.productCode === code ? { ...p, isActive: !currentStatus } : p
-      )
-    );
+    // Extract unique categories
+    const uniqueCategories = Array.from(new Set(productsData.map((p) => p.category)));
+    setCategories(["All", ...uniqueCategories]);
 
-    await axios.patch(`${API_BASE_URL}/api/products/${code}/toggle-status`, {
-      isActive: !currentStatus,
-    });
-
-    // ✅ Optionally re-fetch products if you don't trust optimistic state
-    // await fetchProducts();
-  } catch (err) {
-    console.error("Failed to toggle product status", err);
-    // Rollback in case of error
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.productCode === code ? { ...p, isActive: currentStatus } : p
-      )
-    );
+    setError(null);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    setError("Failed to load products. Please try again.");
+    setProducts([]);
   } finally {
-    setTogglingProductCode(null); // ✅ Clear spinner state
+    setIsLoading(false);
   }
 };
 
+
+  useEffect(() => {
+    // Apply filters whenever products, searchQuery or selectedCategory changes
+   const filtered = products.filter((product) => {
+      const matchesSearch = 
+        product.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.productCode.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = 
+        selectedCategory === "All" || 
+        product.category === selectedCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+    
+    setFilteredProducts(filtered);
+  }, [products, searchQuery, selectedCategory]);
+
+  const handleToggleProductStatus = async (code, currentStatus) => {
+    try {
+      setTogglingProductCode(code);
+
+      // Optimistic update
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.productCode === code ? { ...p, isActive: !currentStatus } : p
+        )
+      );
+
+      await axios.patch(`${API_BASE_URL}/api/products/${code}/toggle-status`, {
+        isActive: !currentStatus,
+      });
+    } catch (err) {
+      console.error("Failed to toggle product status", err);
+      // Rollback in case of error
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.productCode === code ? { ...p, isActive: currentStatus } : p
+        )
+      );
+    } finally {
+      setTogglingProductCode(null);
+    }
+  };
 
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
@@ -116,7 +141,7 @@ const handleToggleProductStatus = async (code, currentStatus) => {
             Manage Fireworks Products
           </h1>
           <p className="text-xs sm:text-sm text-orange-600 mt-1">
-            Total: {products.length} products
+            Total: {filteredProducts.length} products
           </p>
         </div>
         <Link
@@ -125,6 +150,38 @@ const handleToggleProductStatus = async (code, currentStatus) => {
         >
           <span className="mr-1 font-bold">+</span> Add New Product
         </Link>
+      </div>
+
+      {/* Search and Filter Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by name or code..."
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Filter className="h-4 w-4 text-gray-400" />
+          </div>
+          <select
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm appearance-none bg-white"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {error && (
@@ -144,16 +201,16 @@ const handleToggleProductStatus = async (code, currentStatus) => {
         </div>
       )}
 
-      {products.length === 0 && !error ? (
+      {filteredProducts.length === 0 && !error ? (
         <NoContent
           type={"products"}
-          message="No products found. Add your first fireworks product!"
+          message="No products found matching your criteria"
         />
       ) : (
         <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden border border-orange-200">
           {/* Mobile view: Cards */}
           <div className="block sm:hidden">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div
                 key={product.productCode}
                 className="w-full border-b border-orange-100 p-1 flex items-start gap-3 hover:bg-orange-50 transition-colors"
@@ -214,29 +271,28 @@ const handleToggleProductStatus = async (code, currentStatus) => {
                     )}
                   </div>
                 </div>
-<div className="mt-2 ">
-<label className="inline-flex items-center cursor-pointer hover:opacity-95 transition-opacity">
-    <input
-      type="checkbox"
-      checked={product.isActive}
-      onChange={() => handleToggleProductStatus(product.productCode, product.isActive)}
-      className="sr-only peer"
-      disabled={togglingProductCode === product.productCode}
-    />
-    <div
-      className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out
-        ${product.isActive ? "bg-indigo-600" : "bg-gray-300"} 
-        peer-checked:shadow-inner
-        ${togglingProductCode === product.productCode ? "opacity-70 cursor-not-allowed" : "peer-active:scale-95"}`}
-    >
-      <div
-        className={`w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out
-          ${product.isActive ? "translate-x-5" : "translate-x-0"}`}
-      />
-    </div>
-  </label>
-
-</div>
+                <div className="mt-2 ">
+                  <label className="inline-flex items-center cursor-pointer hover:opacity-95 transition-opacity">
+                    <input
+                      type="checkbox"
+                      checked={product.isActive}
+                      onChange={() => handleToggleProductStatus(product.productCode, product.isActive)}
+                      className="sr-only peer"
+                      disabled={togglingProductCode === product.productCode}
+                    />
+                    <div
+                      className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out
+                        ${product.isActive ? "bg-indigo-600" : "bg-gray-300"} 
+                        peer-checked:shadow-inner
+                        ${togglingProductCode === product.productCode ? "opacity-70 cursor-not-allowed" : "peer-active:scale-95"}`}
+                    >
+                      <div
+                        className={`w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out
+                          ${product.isActive ? "translate-x-5" : "translate-x-0"}`}
+                      />
+                    </div>
+                  </label>
+                </div>
 
                 {/* Actions */}
                 <div className="flex flex-col justify-start items-center space-y-1 ml-1">
@@ -285,18 +341,17 @@ const handleToggleProductStatus = async (code, currentStatus) => {
                   </th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Price
-                    </th>
-                    <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
-  Status
-</th>
-
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
+                    Status
+                  </th>
                   <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-red-800 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-orange-100">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <tr
                     key={product.productCode}
                     className="hover:bg-orange-50 transition-colors"
@@ -370,29 +425,28 @@ const handleToggleProductStatus = async (code, currentStatus) => {
                         )}
                       </div>
                     </td>
-<td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
-  <label className="inline-flex items-center cursor-pointer hover:opacity-95 transition-opacity">
-    <input
-      type="checkbox"
-      checked={product.isActive}
-      onChange={() => handleToggleProductStatus(product.productCode, product.isActive)}
-      className="sr-only peer"
-      disabled={togglingProductCode === product.productCode}
-    />
-    <div
-      className={`w-11 h-6 flex items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out
-        ${product.isActive ? "bg-indigo-600" : "bg-gray-300"} 
-        peer-checked:shadow-inner
-        ${togglingProductCode === product.productCode ? "opacity-70 cursor-not-allowed" : "peer-active:scale-95"}`}
-    >
-      <div
-        className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out
-          ${product.isActive ? "translate-x-5" : "translate-x-0"}`}
-      />
-    </div>
-  </label>
-</td>
-
+                    <td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
+                      <label className="inline-flex items-center cursor-pointer hover:opacity-95 transition-opacity">
+                        <input
+                          type="checkbox"
+                          checked={product.isActive}
+                          onChange={() => handleToggleProductStatus(product.productCode, product.isActive)}
+                          className="sr-only peer"
+                          disabled={togglingProductCode === product.productCode}
+                        />
+                        <div
+                          className={`w-11 h-6 flex items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out
+                            ${product.isActive ? "bg-indigo-600" : "bg-gray-300"} 
+                            peer-checked:shadow-inner
+                            ${togglingProductCode === product.productCode ? "opacity-70 cursor-not-allowed" : "peer-active:scale-95"}`}
+                        >
+                          <div
+                            className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out
+                              ${product.isActive ? "translate-x-5" : "translate-x-0"}`}
+                          />
+                        </div>
+                      </label>
+                    </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm sm:text-base font-medium">
                       <div className="flex justify-end space-x-2 sm:space-x-4">
                         <button
