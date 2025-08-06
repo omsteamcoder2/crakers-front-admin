@@ -141,7 +141,7 @@ const confirmDeleteOrder = async () => {
   };
 
   return (
-    <div>
+    <div className="p-1 md:p-6">
       <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
         <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
         Manage Orders

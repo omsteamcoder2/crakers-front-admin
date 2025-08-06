@@ -113,7 +113,7 @@ const AdminLayout = () => {
           </div>
         </header>
         
-        <main className="flex-1 overflow-auto p-2 md:p-6">
+        <main className="flex-1 overflow-auto">
           <div className="max-w-full mx-auto">
             <Outlet />
           </div>

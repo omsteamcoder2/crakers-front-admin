@@ -13,85 +13,86 @@ const Dashboard = () => {
     revenue: 0,
   });
   const [recentActivities, setRecentActivities] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState("week"); // week, month, year
+  const [timeRange, setTimeRange] = useState("week");
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-   const fetchDashboardData = async () => {
-  setIsLoading(true);
-  try {
-    const [productsRes, galleryRes, tagsRes, ordersRes] = await Promise.all([
-      axios.get(`${API_BASE_URL}/api/products`),
-      axios.get(`${API_BASE_URL}/api/galleries`),
-      axios.get(`${API_BASE_URL}/api/gtm-tags`),
-      axios.get(`${API_BASE_URL}/api/orders/getall`),
-    ]);
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
+      try {
+        const [productsRes, galleryRes, tagsRes, ordersRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/products`),
+          axios.get(`${API_BASE_URL}/api/galleries`),
+          axios.get(`${API_BASE_URL}/api/gtm-tags`),
+          axios.get(`${API_BASE_URL}/api/orders/getall`),
+        ]);
 
-    // Make sure that ordersRes.data is an array before using .reduce
-    const orders = Array.isArray(ordersRes.data) ? ordersRes.data : [];
-    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+        const ordersData = ordersRes.data.orders || ordersRes.data || [];
+        const totalRevenue = ordersData.reduce((sum, order) => sum + order.total, 0);
+        const recentOrders = ordersData.slice(0, 3);
 
-    setStats({
-      products: productsRes.data.products?.length || 0,
-      gallery: galleryRes.data.galleries?.length || 0,
-      tags: tagsRes.data.tags?.length || 0,
-      orders: orders.length || 0,
-      revenue: totalRevenue,
-    });
+        setStats({
+          products: productsRes.data.products?.length || 0,
+          gallery: galleryRes.data.galleries?.length || 0,
+          tags: tagsRes.data.tags?.length || 0,
+          orders: ordersData.length || 0,
+          revenue: totalRevenue,
+        });
 
-    const activities = [];
+        setRecentOrders(recentOrders);
 
-    if (productsRes.data.products?.length > 0) {
-      const recentProduct = productsRes.data.products[0];
-      activities.push({
-        type: "product",
-        message: `New product "${recentProduct.productName}" was added`,
-        time: new Date(recentProduct.createdAt || Date.now()),
-      });
-    }
+        const activities = [];
 
-    if (galleryRes.data.galleries?.length > 0) {
-      const recentGallery = galleryRes.data.galleries[0];
-      activities.push({
-        type: "gallery",
-        message: `Gallery updated with ${recentGallery.images?.length || 0} images`,
-        time: new Date(recentGallery.createdAt || Date.now()),
-      });
-    }
+        if (productsRes.data.products?.length > 0) {
+          const recentProduct = productsRes.data.products[0];
+          activities.push({
+            type: "product",
+            message: `New product "${recentProduct.productName}" was added`,
+            time: new Date(recentProduct.createdAt || Date.now()),
+          });
+        }
 
-    if (tagsRes.data.tags?.length > 0) {
-      const recentTag = tagsRes.data.tags[0];
-      activities.push({
-        type: "tag",
-        message: `GTM Tag "${recentTag.name}" was added`,
-        time: new Date(recentTag.createdAt || Date.now()),
-      });
-    }
+        if (galleryRes.data.galleries?.length > 0) {
+          const recentGallery = galleryRes.data.galleries[0];
+          activities.push({
+            type: "gallery",
+            message: `Gallery updated with ${recentGallery.images?.length || 0} images`,
+            time: new Date(recentGallery.createdAt || Date.now()),
+          });
+        }
 
-    if (orders.length > 0) {
-      const recentOrder = orders[0];
-      activities.push({
-        type: "order",
-        message: `New order #${recentOrder._id.slice(-6)} for ₹${recentOrder.total}`,
-        time: new Date(recentOrder.createdAt || Date.now()),
-      });
-    }
+        if (tagsRes.data.tags?.length > 0) {
+          const recentTag = tagsRes.data.tags[0];
+          activities.push({
+            type: "tag",
+            message: `GTM Tag "${recentTag.name}" was added`,
+            time: new Date(recentTag.createdAt || Date.now()),
+          });
+        }
 
-    activities.sort((a, b) => b.time - a.time);
-    setRecentActivities(activities.slice(0, 5));
-    setError(null);
-  } catch (err) {
-    console.error("Dashboard fetch error:", err);
-    setError("Failed to load dashboard data. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+        if (ordersData.length > 0) {
+          const recentOrder = ordersData[0];
+          activities.push({
+            type: "order",
+            message: `New order #${recentOrder._id.slice(-6)} for ₹${recentOrder.total}`,
+            time: new Date(recentOrder.createdAt || Date.now()),
+          });
+        }
 
-
+        activities.sort((a, b) => b.time - a.time);
+        setRecentActivities(activities.slice(0, 5));
+        setError(null);
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        setError("Failed to load dashboard data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     fetchDashboardData();
   }, [API_BASE_URL, timeRange]);
@@ -114,6 +115,17 @@ const Dashboard = () => {
     }).format(amount);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'confirmed': return 'bg-blue-100 text-blue-800';
+      case 'shipped': return 'bg-purple-100 text-purple-800';
+      case 'delivered': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -126,9 +138,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 p-2 md:p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Overview</h1>
@@ -177,7 +188,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <DashboardCard
             title="Total Revenue"
@@ -218,7 +228,7 @@ const Dashboard = () => {
             trend="down"
             trendValue="3%"
             color="bg-purple-50"
-            link="/manage-products"
+            link="/manage-product"
           />
 
           <DashboardCard
@@ -236,9 +246,7 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Orders */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-4 md:p-6 border-b border-gray-200 flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-800">Recent Orders</h2>
@@ -247,26 +255,39 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {[1, 2, 3].map((order) => (
-                <div key={order} className="p-4 md:p-6 hover:bg-gray-50 transition-colors duration-150">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-800">Order #ORD{1000 + order}</h3>
-                      <p className="text-xs text-gray-500 mt-1">Customer Name • {new Date().toLocaleDateString()}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-800">{formatCurrency(1500 + (order * 500))}</p>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                        Delivered
-                      </span>
+              {recentOrders.length > 0 ? (
+                recentOrders.map((order) => (
+                  <div key={order._id} className="p-4 md:p-6 hover:bg-gray-50 transition-colors duration-150">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-800">
+                          Order #{order._id.slice(-6).toUpperCase()} • {order.contact.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(order.createdAt).toLocaleDateString()} • {order.products.length} items
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-gray-800">{formatCurrency(order.total)}</p>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="p-6 text-center">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No recent orders</h3>
+                  <p className="mt-1 text-sm text-gray-500">New orders will appear here</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
-          {/* Recent Activity */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-4 md:p-6 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800">Recent Activity</h2>
@@ -315,7 +336,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <QuickAction
             title="Add Product"
@@ -354,7 +374,7 @@ const Dashboard = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
             }
-            link="/manage-gmt"
+            link="/managegtmtag"
             color="bg-orange-100 text-orange-600"
           />
         </div>
