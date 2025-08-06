@@ -14,7 +14,8 @@ const ManageOrders = () => {
   const [expandedRows, setExpandedRows] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-const [orderToDelete, setOrderToDelete] = useState(null);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+  const [filteredTotal, setFilteredTotal] = useState(0);
   const [dateFilter, setDateFilter] = useState({
     startDate: "",
     endDate: ""
@@ -43,32 +44,37 @@ const [orderToDelete, setOrderToDelete] = useState(null);
     }
   };
 
-  const filterOrders = () => {
-    let result = [...orders];
+ const filterOrders = () => {
+  let result = [...orders];
 
-    // Apply search filter
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(order => 
-        order.contact.name.toLowerCase().includes(term) || 
-        order.contact.phone.includes(term)
-      );
-    }
+  // Apply search filter
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    result = result.filter(order => 
+      order.contact.name.toLowerCase().includes(term) || 
+      order.contact.phone.includes(term)
+    );
+  }
 
-    // Apply date filter
-    if (dateFilter.startDate && dateFilter.endDate) {
-      const start = new Date(dateFilter.startDate);
-      const end = new Date(dateFilter.endDate);
-      end.setHours(23, 59, 59, 999); // Include entire end day
+  // Apply date filter
+  if (dateFilter.startDate && dateFilter.endDate) {
+    const start = new Date(dateFilter.startDate);
+    const end = new Date(dateFilter.endDate);
+    end.setHours(23, 59, 59, 999); // Include entire end day
 
-      result = result.filter(order => {
-        const orderDate = new Date(order.createdAt);
-        return orderDate >= start && orderDate <= end;
-      });
-    }
+    result = result.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= start && orderDate <= end;
+    });
+  }
 
-    setFilteredOrders(result);
-  };
+  setFilteredOrders(result);
+
+  // Calculate the total amount for filtered orders
+  const filteredTotal = result.reduce((sum, order) => sum + order.total, 0);
+  setFilteredTotal(filteredTotal);
+};
+
 const handleDeleteClick = (order) => {
   setOrderToDelete(order);
   setConfirmModalOpen(true);
@@ -241,7 +247,14 @@ const confirmDeleteOrder = async () => {
           No orders found
         </div>
       ) : (
-        <div className="overflow-x-auto">
+              <div className="overflow-x-auto">
+                <div className="mb-4">
+  {filteredOrders.length > 0 && (
+    <div className="text-md md:text-lg font-bold text-gray-800">Total Amount: ₹{filteredTotal.toLocaleString()}
+    </div>
+  )}
+</div>
+
           {/* Mobile View - Cards */}
           <div className="sm:hidden space-y-3">
             {filteredOrders.map((order) => (
